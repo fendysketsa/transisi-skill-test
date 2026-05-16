@@ -10,7 +10,7 @@
     <div class="card">
         <div class="card-body">
             <form action="{{ route('employees.update', $employee) }}" method="POST">
-                @include('employees._form', ['employee' => $employee, 'companies' => $companies])
+                @include('employees._form', ['employee' => $employee, 'selectedCompany' => $selectedCompany])
             </form>
         </div>
     </div>

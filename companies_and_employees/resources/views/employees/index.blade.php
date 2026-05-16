@@ -4,7 +4,10 @@
 <div class="container">
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h1 class="h3 mb-0">Employees</h1>
-        <a href="{{ route('employees.create') }}" class="btn btn-primary">Tambah Employee</a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('employees.import.form') }}" class="btn btn-outline-primary">Import Excel</a>
+            <a href="{{ route('employees.create') }}" class="btn btn-primary">Tambah Employee</a>
+        </div>
     </div>
 
     @if (session('success'))

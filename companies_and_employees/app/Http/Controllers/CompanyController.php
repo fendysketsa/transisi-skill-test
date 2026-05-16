@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
 use App\Repositories\CompanyRepository;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CompanyController extends Controller
 {
@@ -51,9 +53,19 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        $company->load('employees');
+        $company->load(['employees' => fn ($query) => $query->orderBy('name')]);
 
         return view('companies.show', compact('company'));
+    }
+
+    public function exportEmployeesPdf(Company $company)
+    {
+        $company->load(['employees' => fn ($query) => $query->orderBy('name')]);
+
+        return PDF::loadView('companies.pdf.employees', compact('company'))
+            ->setPaper('a4')
+            ->setOrientation('portrait')
+            ->download('employees-'.$company->id.'-'.Str::slug($company->name).'.pdf');
     }
 
     /**

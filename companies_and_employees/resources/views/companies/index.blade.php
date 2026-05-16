@@ -34,6 +34,7 @@
                             <td><a href="{{ $company->website }}" target="_blank" rel="noopener">{{ $company->website }}</a></td>
                             <td class="text-end">
                                 <div class="d-inline-flex gap-1">
+                                    <a href="{{ route('companies.employees.pdf', $company) }}" class="btn btn-sm btn-outline-success">PDF</a>
                                     <a href="{{ route('companies.show', $company) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
                                     <a href="{{ route('companies.edit', $company) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                     <form action="{{ route('companies.destroy', $company) }}" method="POST" onsubmit="return confirm('Hapus company ini? Data employees terkait juga akan terhapus.');">

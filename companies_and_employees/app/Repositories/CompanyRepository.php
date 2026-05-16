@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Company;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator as SelectPaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -24,6 +25,26 @@ class CompanyRepository
         return Company::query()
             ->orderBy('name')
             ->get(['id', 'name']);
+    }
+
+    public function findForSelect(mixed $id): ?Company
+    {
+        if (! $id) {
+            return null;
+        }
+
+        return Company::query()->find($id, ['id', 'name']);
+    }
+
+    public function searchForSelect(?string $term, int $perPage = 10): SelectPaginator
+    {
+        return Company::query()
+            ->when($term, function ($query, string $term): void {
+                $query->where('name', 'like', '%'.$term.'%')
+                    ->orWhere('email', 'like', '%'.$term.'%');
+            })
+            ->orderBy('name')
+            ->paginate($perPage, ['id', 'name']);
     }
 
     public function create(array $data): Company

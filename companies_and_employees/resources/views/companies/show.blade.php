@@ -5,6 +5,7 @@
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h1 class="h3 mb-0">Detail Company</h1>
         <div class="d-flex gap-2">
+            <a href="{{ route('companies.employees.pdf', $company) }}" class="btn btn-outline-success">Export Employees PDF</a>
             <a href="{{ route('companies.edit', $company) }}" class="btn btn-primary">Edit</a>
             <a href="{{ route('companies.index') }}" class="btn btn-outline-secondary">Kembali</a>
         </div>
