@@ -15,7 +15,8 @@ class CompanyRepository
     public function paginate(int $perPage = 5): LengthAwarePaginator
     {
         return Company::query()
-            ->latest()
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
     }

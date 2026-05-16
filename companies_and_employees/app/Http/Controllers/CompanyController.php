@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
 use App\Repositories\CompanyRepository;
+use App\Support\SimpleEmployeesPdf;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use LogicException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -53,19 +55,33 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        $company->load(['employees' => fn ($query) => $query->orderBy('name')]);
+        $company->load(['employees' => fn ($query) => $query->orderByDesc('created_at')->orderByDesc('id')]);
 
         return view('companies.show', compact('company'));
     }
 
     public function exportEmployeesPdf(Company $company)
     {
-        $company->load(['employees' => fn ($query) => $query->orderBy('name')]);
+        $company->load(['employees' => fn ($query) => $query->orderByDesc('created_at')->orderByDesc('id')]);
+        $filename = 'employees-'.$company->id.'-'.Str::slug($company->name).'.pdf';
 
-        return PDF::loadView('companies.pdf.employees', compact('company'))
-            ->setPaper('a4')
-            ->setOrientation('portrait')
-            ->download('employees-'.$company->id.'-'.Str::slug($company->name).'.pdf');
+        if (function_exists('proc_open')) {
+            try {
+                return PDF::loadView('companies.pdf.employees', compact('company'))
+                    ->setPaper('a4')
+                    ->setOrientation('portrait')
+                    ->download($filename);
+            } catch (LogicException $exception) {
+                if (! str_contains($exception->getMessage(), 'proc_open')) {
+                    throw $exception;
+                }
+            }
+        }
+
+        return response(app(SimpleEmployeesPdf::class)->render($company), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
     }
 
     /**

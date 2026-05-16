@@ -11,7 +11,8 @@ class EmployeeRepository
     {
         return Employee::query()
             ->with('company')
-            ->latest()
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
     }
